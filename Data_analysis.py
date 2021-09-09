@@ -4,10 +4,10 @@ import pyodbc
 # server = 'localhost\sqlexpress' # for a named instance
 # server = 'myserver,port' # to specify an alternate port
 
-server = ''
-database = ''
-username = 'r'
-password = ''
+server = '140.128.97.85'
+database = 'thuir'
+username = 'thuir'
+password = 'thuir'
 cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 cursor = cnxn.cursor()
 
@@ -20,7 +20,7 @@ cursor = cnxn.cursor()
 #course_info
 query1 = "SELECT * FROM thuir_studscore_attr WHERE SETYEAR = '109' AND SETTERM = '2' AND type_name= '日間學士班';"
 df_109_2 = pd.read_sql(query1, cnxn)
-
+df_109_2.to_excel (r'D:\AI_學生效益分析108_2開始\df_109_2.xlsx', index = False, header=True)
 
 # # query2 = "SELECT * FROM THUIR_STUDSCORE_ATTR WHERE SETYEAR = '109' AND SETTERM = '1' AND type_name= '日間學士班';"
 # # df_109_1 = pd.read_sql(query2, cnxn)
@@ -37,7 +37,7 @@ df_109_2 = pd.read_sql(query1, cnxn)
 
 
 #------------------------留下有AI相關課程的學號---------------------------#
-df109_2= df_109_2[df_109_2['CURR_ATTR'].isin(['全校性AI課程', 'AI計畫L1','AI計畫L2','程式設計-Level2','程式設計-Level1','程式設計-Level3','創新學院-雲創'])]
+df109_2= df_109_2[df_109_2['CURR_ATTR'].isin(['全校性AI課程'])]
 # df109_1= df_109_1[df_109_1['CURR_ATTR'].isin(['全校性AI課程', 'AI計畫L1','AI計畫L2','程式設計-Level2','程式設計-Level1','程式設計-Level3','創新學院-雲創'])]
 # df108_2= df_108_2[df_108_2['CURR_ATTR'].isin(['全校性AI課程', 'AI計畫L1','AI計畫L2','程式設計-Level2','程式設計-Level1','程式設計-Level3','創新學院-雲創'])]
 
@@ -75,7 +75,26 @@ df109_2_AI生修課狀況['MAJR_FULL_NAME_2'] = df109_2_AI生修課狀況['MAJR_
 
 df109_2_AI生修課狀況 ['跨域'] = (df109_2_AI生修課狀況 ['MAJR_FULL_NAME_2'] == df109_2_AI生修課狀況 ['MAJR1_NAME'])
 df109_2_AI生修課狀況.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課狀況.xlsx', index = False, header=True)
+
+
+#-----------------------------------全校性AI課程+乾淨的修課紀錄------------------------------------
+
+df109_2_AI生修課狀況s = df109_2_AI生修課狀況.loc[df109_2_AI生修課狀況['CURR_ATTR']=='全校性AI課程',:]
+df109_2_AI生修課狀況t = df109_2_AI生修課狀況[~df109_2_AI生修課狀況['CURR_ATTR'].isin(['全校性AI課程'])]
+
+df109_2_AI生修課狀況t = df109_2_AI生修課狀況t.drop_duplicates(subset=['STUD_NO', 'CURR_CODE'], keep='first')
+listdf = [df109_2_AI生修課狀況t, df109_2_AI生修課狀況s]
+df109_2_AI生修課狀況_new = pd.concat(listdf)
+df109_2_AI生修課狀況_new.sort_values(by='STUD_NO', inplace=True)
+
+df109_2_AI生修課狀況_new.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課狀況_new .xlsx', index = False, header=True)
+
+
+
+#---------------------------------------------------計算跨域 各類修課成績---------------------------------------------------------------------------
+
 crosstab_df = pd.crosstab(df109_2_AI生修課狀況.STUD_NO,df109_2_AI生修課狀況.跨域).apply(lambda r: r/r.sum(), axis=1)
+crosstab_df.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課crosstab_df.xlsx', index = False, header=True)
 import numpy as np
 df109_2_AI生修課狀況['SCORE_2'] = df109_2_AI生修課狀況['SCORE'].replace({
                                                                                  '通過':np.nan,
@@ -83,6 +102,7 @@ df109_2_AI生修課狀況['SCORE_2'] = df109_2_AI生修課狀況['SCORE'].replac
                                                                                  '抵免':np.nan,})
 df109_2_AI生修課狀況['SCORE_2'] = df109_2_AI生修課狀況['SCORE_2'].astype('float')
 crosstab_df_成績 = pd.crosstab(df109_2_AI生修課狀況.STUD_NO, df109_2_AI生修課狀況.CURR_SEL, values=df109_2_AI生修課狀況.SCORE_2, aggfunc=np.nanmean)
+
 
 
 # df109_1＿修課 = df_109_1[df_109_1['STUD_NO'].isin(new_1091['STUD_NO'])]
