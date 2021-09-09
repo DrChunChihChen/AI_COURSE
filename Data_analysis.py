@@ -76,7 +76,14 @@ df109_2_AI生修課狀況['MAJR_FULL_NAME_2'] = df109_2_AI生修課狀況['MAJR_
 df109_2_AI生修課狀況 ['跨域'] = (df109_2_AI生修課狀況 ['MAJR_FULL_NAME_2'] == df109_2_AI生修課狀況 ['MAJR1_NAME'])
 df109_2_AI生修課狀況.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課狀況.xlsx', index = False, header=True)
 crosstab_df = pd.crosstab(df109_2_AI生修課狀況.STUD_NO,df109_2_AI生修課狀況.跨域).apply(lambda r: r/r.sum(), axis=1)
-pd.crosstab(df109_2_AI生修課狀況.Sex, df.Handedness, values=df.Age, aggfunc=np.average)
+import numpy as np
+df109_2_AI生修課狀況['SCORE_2'] = df109_2_AI生修課狀況['SCORE'].replace({
+                                                                                 '通過':np.nan,
+                                                                                 '未過':np.nan,
+                                                                                 '抵免':np.nan,})
+df109_2_AI生修課狀況['SCORE_2'] = df109_2_AI生修課狀況['SCORE_2'].astype('float')
+crosstab_df_成績 = pd.crosstab(df109_2_AI生修課狀況.STUD_NO, df109_2_AI生修課狀況.CURR_SEL, values=df109_2_AI生修課狀況.SCORE_2, aggfunc=np.nanmean)
+
 
 # df109_1＿修課 = df_109_1[df_109_1['STUD_NO'].isin(new_1091['STUD_NO'])]
 # df109_1＿修課.to_excel (r'D:\AI_學生效益分析108_2開始\df109_1＿修課.xlsx', index = False, header=True)
