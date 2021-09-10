@@ -89,7 +89,11 @@ df109_2_AI生修課狀況_new.sort_values(by='STUD_NO', inplace=True)
 df109_2_AI生修課狀況_new = df109_2_AI生修課狀況_new.drop_duplicates(subset=['STUD_NO', 'CURR_CODE'], keep='first')
 df109_2_AI生修課狀況_new.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課狀況_new .xlsx', index = False, header=True)
 
+#---------------------------------------------------------測試-------------------------------------
 
+df109_2_AI生修課狀況_new2 = df109_2_AI生修課狀況.loc[(df['CURR_ATTR'] =='全校性AI課程') | ~df109_2_AI生修課狀況.duplicated(subset=['STUD_NO', 'CURR_CODE'])]
+
+df109_2_AI生修課狀況_new2.to_excel (r'D:\AI_學生效益分析108_2開始\df109_2_AI生修課狀況_new2 .xlsx', index = False, header=True)
 
 #---------------------------------------------------計算跨域 各類修課成績---------------------------------------------------------------------------
 
