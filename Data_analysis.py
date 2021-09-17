@@ -4,10 +4,10 @@ import pyodbc
 # server = 'localhost\sqlexpress' # for a named instance
 # server = 'myserver,port' # to specify an alternate port
 
-server = '140.128.97.85'
-database = 'thuir'
-username = 'thuir'
-password = 'thuir'
+server = ''
+database = ''
+username = ''
+password = ''
 cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 cursor = cnxn.cursor()
 
