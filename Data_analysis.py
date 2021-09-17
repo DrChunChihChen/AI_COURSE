@@ -24,9 +24,8 @@ df_109_2.to_excel (r'D:\AI_學生效益分析108_2開始\df_109_2.xlsx', index =
 
 # # query2 = "SELECT * FROM THUIR_STUDSCORE_ATTR WHERE SETYEAR = '109' AND SETTERM = '1' AND type_name= '日間學士班';"
 # # df_109_1 = pd.read_sql(query2, cnxn)
-# #
-# # query3 = "SELECT * FROM THUIR_STUDSCORE_ATTR WHERE SETYEAR = '108' AND SETTERM = '2' AND type_name= '日間學士班';"
-# # df_108_2 = pd.read_sql(query3, cnxn)
+query3 = "SELECT * FROM THUIR_STUDSCORE_ATTR WHERE SETYEAR = '108' AND SETTERM = '2' AND type_name= '日間學士班';"
+df_108_2 = pd.read_sql(query3, cnxn)
 # #
 # # query4 = "SELECT * FROM THUIR_STUDSCORE_ATTR WHERE SETYEAR = '108' AND SETTERM = '1' AND type_name= '日間學士班';"
 # # df_108_1 = pd.read_sql(query4, cnxn)
