@@ -1,0 +1,78 @@
+import pandas as pd
+import pyodbc
+# Some other example server values are
+# server = 'localhost\sqlexpress' # for a named instance
+# server = 'myserver,port' # to specify an alternate port
+
+server = '140.128.97.85'
+database = 'thuir'
+username = 'thuir'
+password = 'thuir'
+cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+cursor = cnxn.cursor()
+
+cursor.execute("SELECT @@version;")
+row = cursor.fetchone()
+while row:
+    print(row[0])
+    row = cursor.fetchone()
+cursor = cnxn.cursor()
+#course_info
+# query1 = "SELECT * FROM thuir_studscore_attr WHERE SETYEAR = '108' AND SETTERM = '2';"
+# df_108_2 = pd.read_sql(query1, cnxn)
+# df_108_2 ["CURR_ATTR"].value_counts()
+# df108_2_全校性AI= df_108_2 [df_108_2 ['CURR_ATTR'].isin(['全校性AI課程'])]
+
+
+query2 = "SELECT * FROM thuir_course_syllabus WHERE Secd_year = '108' AND Secd_term = '2';"
+df_108_2_course = pd.read_sql(query2, cnxn)
+query3 = "SELECT * FROM thuir_course_syllabus_18week WHERE Secd_year = '108' AND Secd_term = '2';"
+df_108_2_18weeks = pd.read_sql(query3, cnxn)
+df108_2_全校性課程_大綱_18weeks = pd.merge(df_108_2_course, df_108_2_18weeks, left_on="curr_code", right_on="curr_code",how='outer')
+
+# cour_title
+df_1 = df108_2_全校性課程_大綱_18weeks[df108_2_全校性課程_大綱_18weeks['cour_title'].notna()]
+df_1['AI'] = df_1['cour_title'].str.contains('AI').astype(int)
+df_1['AIoT'] = df_1['cour_title'].str.contains('AIoT').astype(int)
+df_1['大數據'] = df_1['cour_title'].str.contains('大數據').astype(int)
+df_1['物聯網'] = df_1['cour_title'].str.contains('物聯網').astype(int)
+df_1['深度學習'] = df_1['cour_title'].str.contains('深度學習').astype(int)
+df_1['人工智慧'] = df_1['cour_title'].str.contains('人工智慧').astype(int)
+df_1['智慧'] = df_1['cour_title'].str.contains('智慧').astype(int)
+df_1['Python'] = df_1['cour_title'].str.contains('Python').astype(int)
+df_1['SUM'] = df_1.iloc[:,-8:].sum(axis=1)
+df_title = df_1[df_1['SUM'] > 0]
+
+# cour_content
+df_2 = df108_2_全校性課程_大綱_18weeks[df108_2_全校性課程_大綱_18weeks['content'].notna()]
+df_2['AI'] = df_2 ['content'].str.contains('AI').astype(int)
+df_2['AIoT'] = df_2 ['content'].str.contains('AIoT').astype(int)
+df_2['大數據'] = df_2 ['content'].str.contains('大數據').astype(int)
+df_2['物聯網'] = df_2 ['content'].str.contains('物聯網').astype(int)
+df_2['深度學習'] =df_2 ['content'].str.contains('深度學習').astype(int)
+df_2['人工智慧'] = df_2 ['content'].str.contains('人工智慧').astype(int)
+df_2['智慧'] = df_2 ['content'].str.contains('智慧').astype(int)
+df_2['Python'] = df_2 ['content'].str.contains('Python').astype(int)
+df_2['SUM'] = df_2 .iloc[:,-8:].sum(axis=1)
+df_content = df_2 [df_2['SUM'] > 0]
+
+# cour_syllabus
+df_3 = df108_2_全校性課程_大綱_18weeks[df108_2_全校性課程_大綱_18weeks['syllabus'].notna()]
+df_3['AI'] = df_3 ['syllabus'].str.contains('AI').astype(int)
+df_3['AIoT'] = df_3['syllabus'].str.contains('AIoT').astype(int)
+df_3['大數據'] = df_3 ['syllabus'].str.contains('大數據').astype(int)
+df_3['物聯網'] = df_3 ['syllabus'].str.contains('物聯網').astype(int)
+df_3['深度學習'] =df_3 ['syllabus'].str.contains('深度學習').astype(int)
+df_3['人工智慧'] = df_3 ['syllabus'].str.contains('人工智慧').astype(int)
+df_3['智慧'] = df_3 ['syllabus'].str.contains('智慧').astype(int)
+df_3['Python'] = df_3 ['syllabus'].str.contains('Python').astype(int)
+df_3['SUM'] = df_3 .iloc[:,-8:].sum(axis=1)
+df_syllabus = df_3 [df_3['SUM'] > 0]
+
+
+merged_df = pd.merge(df_title, df_syllabus, on = ['cour_title'], how = 'outer')
+
+import pandas as pd
+test_df = pd.concat([df_title, df_syllabus]).drop_duplicates().reset_index(drop=True)
+test_df_F = pd.concat([test_df , df_content]).drop_duplicates().reset_index(drop=True)
+test_df_F.to_excel('test_df_F_df_1082.xlsx')
